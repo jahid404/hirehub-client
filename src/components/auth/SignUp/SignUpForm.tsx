@@ -8,6 +8,11 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import type { CommonProps } from '@/@types/common'
+import ApiService from '@/services/ApiService'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
+import { useRouter } from 'next/navigation'
+import parseErrorMessage from '@/utils/parseErrorMessage'
 
 type SignUpFormSchema = {
     userName: string
@@ -47,6 +52,7 @@ const SignUpForm = (props: SignUpFormProps) => {
     const { onSignUp, className, setMessage } = props
 
     const [isSubmitting, setSubmitting] = useState<boolean>(false)
+    const router = useRouter()
 
     const {
         handleSubmit,
@@ -57,8 +63,33 @@ const SignUpForm = (props: SignUpFormProps) => {
     })
 
     const handleSignUp = async (values: SignUpFormSchema) => {
-        if (onSignUp) {
-            onSignUp({ values, setSubmitting, setMessage })
+        setSubmitting(true)
+        setMessage('')
+
+        // Map userName to name to match the server's registration validation schema requirements
+        const payload = {
+            name: values.userName,
+            email: values.email,
+            password: values.password,
+            confirmPassword: values.confirmPassword,
+        }
+
+        try {
+            await ApiService.fetchDataWithAxios({
+                url: '/auth/signup',
+                method: 'post',
+                data: payload,
+            })
+            toast.push(
+                <Notification title="Account created!" type="success">
+                    You can now sign in from our sign in page
+                </Notification>,
+            )
+            router.push('/sign-in')
+        } catch (error: any) {
+            setMessage(parseErrorMessage(error))
+        } finally {
+            setSubmitting(false)
         }
     }
 

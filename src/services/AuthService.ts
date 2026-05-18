@@ -9,7 +9,7 @@ import type {
 
 export async function apiSignUp(data: SignUpCredential) {
     return ApiService.fetchDataWithAxios<SignUpResponse>({
-        url: '/auth/sign-up',
+        url: '/auth/signup',
         method: 'post',
         data,
     })
