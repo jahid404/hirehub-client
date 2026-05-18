@@ -12,6 +12,15 @@ export const protectedRoutes: Routes = {
     },
 }
 
-export const publicRoutes: Routes = {}
+export const publicRoutes: Routes = {
+    '/': {
+        key: 'home',
+        authority: [],
+    },
+    '/home': {
+        key: 'home',
+        authority: [],
+    },
+}
 
 export const authRoutes = authRoute

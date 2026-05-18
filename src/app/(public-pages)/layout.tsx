@@ -11,7 +11,11 @@ import { TbSun, TbMoon } from 'react-icons/tb'
 import { HiMenu, HiX } from 'react-icons/hi'
 import { FaGithub, FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa'
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default function PublicLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
     const { session } = useCurrentSession()
     const mode = useTheme((state) => state.mode)
     const setMode = useTheme((state) => state.setMode)
@@ -36,11 +40,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <div className="flex-shrink-0 flex items-center">
-                            <Link href="/home" className="flex items-center gap-2">
+                            <Link
+                                href="/home"
+                                className="flex items-center gap-2"
+                            >
                                 <Logo imgClass="max-h-9" mode={mode} />
-                                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary-deep bg-clip-text text-transparent">
-                                    HireHub
-                                </span>
                             </Link>
                         </div>
 
@@ -111,10 +115,16 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                             </button>
 
                             <button
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                onClick={() =>
+                                    setMobileMenuOpen(!mobileMenuOpen)
+                                }
                                 className="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                             >
-                                {mobileMenuOpen ? <HiX className="text-2xl" /> : <HiMenu className="text-2xl" />}
+                                {mobileMenuOpen ? (
+                                    <HiX className="text-2xl" />
+                                ) : (
+                                    <HiMenu className="text-2xl" />
+                                )}
                             </button>
                         </div>
                     </div>
@@ -142,7 +152,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                                         {session.user?.name || 'My Account'}
                                     </span>
                                 </div>
-                                <Link href="/portal" onClick={() => setMobileMenuOpen(false)}>
+                                <Link
+                                    href="/portal"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
                                     <Button block size="md" variant="solid">
                                         Go to Dashboard
                                     </Button>
@@ -150,12 +163,18 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-3 px-3">
-                                <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                                <Link
+                                    href="/sign-in"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
                                     <Button block variant="default">
                                         Sign In
                                     </Button>
                                 </Link>
-                                <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                                <Link
+                                    href="/sign-up"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
                                     <Button block variant="solid">
                                         Post a Job
                                     </Button>
@@ -167,9 +186,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-grow flex flex-col">
-                {children}
-            </main>
+            <main className="flex-grow flex flex-col">{children}</main>
 
             {/* Premium Multi-column Footer */}
             <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900 transition-colors duration-300">
@@ -179,25 +196,36 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                         <div className="lg:col-span-2 space-y-4">
                             <div className="flex items-center gap-2">
                                 <Logo imgClass="max-h-9" mode={mode} />
-                                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary-deep bg-clip-text text-transparent">
-                                    HireHub
-                                </span>
                             </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed">
-                                Connecting elite talent with world-class companies. Build your dream team or launch your professional journey today.
+                                Connecting elite talent with world-class
+                                companies. Build your dream team or launch your
+                                professional journey today.
                             </p>
                             {/* Social Icons */}
                             <div className="flex space-x-4 pt-2">
-                                <a href="#" className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+                                <a
+                                    href="#"
+                                    className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors"
+                                >
                                     <FaGithub className="text-lg" />
                                 </a>
-                                <a href="#" className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+                                <a
+                                    href="#"
+                                    className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors"
+                                >
                                     <FaTwitter className="text-lg" />
                                 </a>
-                                <a href="#" className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+                                <a
+                                    href="#"
+                                    className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors"
+                                >
                                     <FaLinkedin className="text-lg" />
                                 </a>
-                                <a href="#" className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+                                <a
+                                    href="#"
+                                    className="text-gray-400 hover:text-primary dark:hover:text-white transition-colors"
+                                >
                                     <FaFacebook className="text-lg" />
                                 </a>
                             </div>
@@ -209,9 +237,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                                 For Candidates
                             </h4>
                             <ul className="space-y-2">
-                                {['Explore Jobs', 'Upload Resume', 'Job Alerts', 'Resources'].map((item) => (
+                                {[
+                                    'Explore Jobs',
+                                    'Upload Resume',
+                                    'Job Alerts',
+                                    'Resources',
+                                ].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
+                                        <a
+                                            href="#"
+                                            className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors"
+                                        >
                                             {item}
                                         </a>
                                     </li>
@@ -225,9 +261,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                                 For Employers
                             </h4>
                             <ul className="space-y-2">
-                                {['Post a Job', 'Browse Candidates', 'Pricing Plans', 'Enterprise'].map((item) => (
+                                {[
+                                    'Post a Job',
+                                    'Browse Candidates',
+                                    'Pricing Plans',
+                                    'Enterprise',
+                                ].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
+                                        <a
+                                            href="#"
+                                            className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors"
+                                        >
                                             {item}
                                         </a>
                                     </li>
@@ -241,9 +285,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                                 Company & Legal
                             </h4>
                             <ul className="space-y-2">
-                                {['About Us', 'Contact Support', 'Terms of Service', 'Privacy Policy'].map((item) => (
+                                {[
+                                    'About Us',
+                                    'Contact Support',
+                                    'Terms of Service',
+                                    'Privacy Policy',
+                                ].map((item) => (
                                     <li key={item}>
-                                        <a href="#" className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
+                                        <a
+                                            href="#"
+                                            className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors"
+                                        >
                                             {item}
                                         </a>
                                     </li>
@@ -254,12 +306,28 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
                     <div className="border-t border-gray-100 dark:border-gray-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400 dark:text-gray-500">
                         <div>
-                            &copy; {new Date().getFullYear()} HireHub. All rights reserved.
+                            &copy; {new Date().getFullYear()} HireHub. All
+                            rights reserved.
                         </div>
                         <div className="flex space-x-6">
-                            <a href="#" className="hover:text-primary dark:hover:text-white transition-colors">Security</a>
-                            <a href="#" className="hover:text-primary dark:hover:text-white transition-colors">Cookies</a>
-                            <a href="#" className="hover:text-primary dark:hover:text-white transition-colors">Sitemap</a>
+                            <a
+                                href="#"
+                                className="hover:text-primary dark:hover:text-white transition-colors"
+                            >
+                                Security
+                            </a>
+                            <a
+                                href="#"
+                                className="hover:text-primary dark:hover:text-white transition-colors"
+                            >
+                                Cookies
+                            </a>
+                            <a
+                                href="#"
+                                className="hover:text-primary dark:hover:text-white transition-colors"
+                            >
+                                Sitemap
+                            </a>
                         </div>
                     </div>
                 </div>

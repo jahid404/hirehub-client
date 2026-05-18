@@ -4,7 +4,7 @@ import Image from 'next/image'
 import type { CommonProps } from '@/@types/common'
 
 interface LogoProps extends CommonProps {
-    type?: 'full' | 'streamline'
+    type?: 'full' | 'pocket'
     mode?: 'light' | 'dark'
     imgClass?: string
     logoWidth?: number
@@ -46,10 +46,10 @@ const Logo = (props: LogoProps) => {
                     <Image
                         className={classNames(
                             '',
-                            type === 'streamline' ? '' : 'hidden',
+                            type === 'pocket' ? '' : 'hidden',
                             imgClass,
                         )}
-                        src={`${LOGO_SRC_PATH}logo-light-streamline.png`}
+                        src={`${LOGO_SRC_PATH}logo-light-pocket.png`}
                         alt={`${APP_NAME} logo`}
                         width={width}
                         height={height}
@@ -72,10 +72,10 @@ const Logo = (props: LogoProps) => {
                     />
                     <Image
                         className={classNames(
-                            type === 'streamline' ? '' : 'hidden',
+                            type === 'pocket' ? '' : 'hidden',
                             imgClass,
                         )}
-                        src={`${LOGO_SRC_PATH}logo-dark-streamline.png`}
+                        src={`${LOGO_SRC_PATH}logo-dark-pocket.png`}
                         alt={`${APP_NAME} logo`}
                         width={width}
                         height={height}

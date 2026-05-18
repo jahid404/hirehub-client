@@ -96,7 +96,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
                 <Logo
                     imgClass="max-h-10"
                     mode={mode}
-                    type="streamline"
+                    type="pocket"
                     className={SIDE_NAV_CONTENT_GUTTER}
                 />
             </Link>

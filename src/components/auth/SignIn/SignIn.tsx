@@ -31,7 +31,7 @@ const SignIn = ({
         <>
             <div className="mb-8">
                 <Logo
-                    type="streamline"
+                    type="pocket"
                     mode={mode}
                     logoWidth={60}
                     logoHeight={60}
