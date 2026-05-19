@@ -18,7 +18,7 @@ const adminNavigationConfig: NavigationTree[] = [
     },
     {
         key: 'admin.users',
-        path: '',
+        path: '/portal/users',
         title: 'Manage Users',
         icon: 'users',
         type: NAV_ITEM_TYPE_ITEM,
