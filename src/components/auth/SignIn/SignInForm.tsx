@@ -77,27 +77,19 @@ const SignInForm = (props: SignInFormProps) => {
         setSubmitting(true)
         setMessage('')
 
-        // Map userName to name to match the server's registration validation schema requirements
-        const payload = {
-            email: values.email,
-            password: values.password,
-        }
-
         try {
-            await ApiService.fetchDataWithAxios({
-                url: '/auth/signin',
-                method: 'post',
-                data: payload,
-            })
-            toast.push(
-                <Notification title="Logged in!" type="success">
-                    You're about to be redirected to dashboard
-                </Notification>,
-            )
-            // router.push('/portal')
+            if (onSignIn) {
+                onSignIn({
+                    values,
+                    setSubmitting,
+                    setMessage: (msg) => {
+                        setMessage(msg)
+                        setSubmitting(false)
+                    },
+                })
+            }
         } catch (error: any) {
             setMessage(parseErrorMessage(error))
-        } finally {
             setSubmitting(false)
         }
     }

@@ -1,19 +1,45 @@
 'use server'
+
 import type { SignInCredential } from '@/@types/auth'
-import { signInUserData } from '@/mock/data/authData'
-import sleep from '@/utils/sleep'
+import appConfig from '@/configs/app.config'
+import axios from 'axios'
+import { cookies } from 'next/headers'
 
 const validateCredential = async (values: SignInCredential) => {
-    /** Implement your validation here, as this is just a mock */
     const { email, password } = values
 
-    await sleep(80)
+    try {
+        const response = await axios.post(
+            `${appConfig.serverBaseUrl}${appConfig.apiPrefix}/auth/signin`,
+            { email, password }
+        )
+        const result = response.data
+        if (result && result.success && result.data) {
+            const { user, accessToken } = result.data
 
-    const user = signInUserData.find(
-        (user) => user.email === email && user.password === password,
-    )
+            // Set the accessToken cookie so the client side can read it
+            const cookieStore = await cookies()
+            cookieStore.set('accessToken', accessToken, {
+                path: '/',
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+            })
 
-    return user
+            return {
+                id: user.id,
+                userName: user.email.split('@')[0],
+                email: user.email,
+                avatar: '',
+                authority: [user.role],
+                accessToken,
+            }
+        }
+    } catch (error: any) {
+        console.error('Validation failed:', error?.response?.data || error.message)
+    }
+
+    return null
 }
 
 export default validateCredential

@@ -37,9 +37,10 @@ export default {
     ],
     callbacks: {
         async jwt({ token, user }) {
-            // Persist the authority to the token right after signin
+            // Persist the authority and accessToken to the token right after signin
             if (user) {
                 token.authority = user.authority
+                token.accessToken = (user as any).accessToken
             }
             return token
         },
@@ -50,8 +51,8 @@ export default {
                 user: {
                     ...session.user,
                     id: token.sub,
-                    /** Uncomment this if you want to enable role based access */
-                    // authority: token.authority,
+                    authority: token.authority as string[],
+                    accessToken: token.accessToken as string,
                 },
             }
         },
