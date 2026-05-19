@@ -1,12 +1,15 @@
 'use client'
 
+import { useRef } from 'react'
 import Logo from '@/components/template/Logo'
 import Alert from '@/components/ui/Alert'
 import SignInForm from './SignInForm'
 import OauthSignIn from './OauthSignIn'
+import QuickLogin from './QuickLogin'
 import ActionLink from '@/components/shared/ActionLink'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import useTheme from '@/utils/hooks/useTheme'
+import { ADMIN, RECRUITER, CANDIDATE } from '@/constants/roles.constant'
 import type { OnSignIn } from './SignInForm'
 import type { OnOauthSignIn } from './OauthSignIn'
 import Link from 'next/link'
@@ -27,6 +30,19 @@ const SignIn = ({
     const [message, setMessage] = useTimeOutMessage()
 
     const mode = useTheme((state) => state.mode)
+
+    const setValueRef = useRef<
+        ((name: 'email' | 'password', value: string) => void) | null
+    >(null)
+
+    const handleQuickLogin = (
+        role: typeof ADMIN | typeof RECRUITER | typeof CANDIDATE
+    ) => {
+        if (setValueRef.current) {
+            setValueRef.current('email', `${role}@hirehub.com`)
+            setValueRef.current('password', '123456789')
+        }
+    }
 
     return (
         <>
@@ -65,6 +81,9 @@ const SignIn = ({
                     </div>
                 }
                 onSignIn={onSignIn}
+                onFormReady={(setValue) => {
+                    setValueRef.current = setValue
+                }}
             />
             {/* <div className="mt-8">
                 <div className="flex items-center gap-2 mb-6">
@@ -79,6 +98,11 @@ const SignIn = ({
                     onOauthSignIn={onOauthSignIn}
                 />}
             </div> */}
+
+            {process.env.NODE_ENV === 'development' && (
+                <QuickLogin onQuickLogin={handleQuickLogin} />
+            )}
+
             <div>
                 <div className="mt-6 text-center">
                     <span>{`Don't have an account yet?`} </span>

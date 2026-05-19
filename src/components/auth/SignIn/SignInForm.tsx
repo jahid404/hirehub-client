@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { FormItem, Form } from '@/components/ui/Form'
@@ -11,6 +11,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import type { CommonProps } from '@/@types/common'
 import type { ReactNode } from 'react'
+import ApiService from '@/services/ApiService'
+import { Notification, toast } from '@/components/ui'
+import { useRouter } from 'next/navigation'
+import parseErrorMessage from '@/utils/parseErrorMessage'
 
 export type OnSignInPayload = {
     values: SignInFormSchema
@@ -24,6 +28,9 @@ interface SignInFormProps extends CommonProps {
     passwordHint?: string | ReactNode
     setMessage: (message: string) => void
     onSignIn?: OnSignIn
+    onFormReady?: (
+        setValue: (name: 'email' | 'password', value: string) => void
+    ) => void
 }
 
 type SignInFormSchema = {
@@ -38,24 +45,60 @@ const validationSchema = z.object({
 
 const SignInForm = (props: SignInFormProps) => {
     const [isSubmitting, setSubmitting] = useState<boolean>(false)
+    const router = useRouter()
 
-    const { className, setMessage, onSignIn, passwordHint } = props
+    const { className, setMessage, onSignIn, passwordHint, onFormReady } = props
 
     const {
         handleSubmit,
         formState: { errors },
         control,
+        setValue,
     } = useForm<SignInFormSchema>({
         defaultValues: {
-            email: 'admin-01@ecme.com',
-            password: '123Qwe',
+            email: '',
+            password: '',
         },
         resolver: zodResolver(validationSchema),
     })
 
+    useEffect(() => {
+        if (onFormReady) {
+            onFormReady((name, value) => {
+                setValue(name, value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                })
+            })
+        }
+    }, [onFormReady, setValue])
+
     const handleSignIn = async (values: SignInFormSchema) => {
-        if (onSignIn) {
-            onSignIn({ values, setSubmitting, setMessage })
+        setSubmitting(true)
+        setMessage('')
+
+        // Map userName to name to match the server's registration validation schema requirements
+        const payload = {
+            email: values.email,
+            password: values.password,
+        }
+
+        try {
+            await ApiService.fetchDataWithAxios({
+                url: '/auth/signin',
+                method: 'post',
+                data: payload,
+            })
+            toast.push(
+                <Notification title="Logged in!" type="success">
+                    You're about to be redirected to dashboard
+                </Notification>,
+            )
+            // router.push('/portal')
+        } catch (error: any) {
+            setMessage(parseErrorMessage(error))
+        } finally {
+            setSubmitting(false)
         }
     }
 

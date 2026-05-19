@@ -1,2 +1,4 @@
 export const ADMIN = 'admin'
-export const USER = 'user'
+export const RECRUITER = 'recruiter'
+export const CANDIDATE = 'candidate'
+
