@@ -18,11 +18,11 @@ const Split = ({ children, content, ...rest }: SplitProps) => {
                     />
                     <div className="text-center max-w-[550px]">
                         <h1 className="text-neutral">
-                            The easiest way to build your admin app
+                            The easiest way to connect recruiters & candidates
                         </h1>
                         <p className="text-neutral opacity-80 mx-auto mt-8 font-semibold">
-                            Experience seamless project management with Ecme.
-                            Simplify your workflow, and achieve your goals
+                            Experience a seamless hiring journey with HireHub.
+                            Simplify your recruitment and job application workflow
                             efficiently with our powerful and intuitive tools.
                         </p>
                     </div>

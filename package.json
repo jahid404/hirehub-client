@@ -1,6 +1,6 @@
 {
-  "name": "ecme-next",
-  "version": "1.2.7",
+  "name": "hirehub",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

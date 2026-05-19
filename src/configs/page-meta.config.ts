@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 
 const pageMeta: Metadata = {
-    title: 'Ecme - The Ultimate Next & TypeScript Web Template',
+    title: 'HireHub - The Ultimate Job Platform for Recruiters & Candidates',
     description:
-        'Admin Template and Starter Kit with React, Tailwind Components and Next.js',
+        'HireHub is a premium job platform that seamlessly connects recruiters and candidates to streamline the hiring process.',
     icons: {
         icon: '/favicon.ico',
     },
