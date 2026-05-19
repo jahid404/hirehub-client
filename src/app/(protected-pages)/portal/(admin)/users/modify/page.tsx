@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, Button, Input, FormItem, Form, Alert } from '@/components/ui'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
@@ -13,6 +13,7 @@ import Link from 'next/link'
 import ApiService from '@/services/ApiService'
 import parseErrorMessage from '@/utils/parseErrorMessage'
 import { RECRUITER } from '@/constants/roles.constant'
+import Loading from '@/components/shared/Loading'
 
 type RecruiterFormSchema = {
     name: string
@@ -45,8 +46,13 @@ const validationSchema = z.object({
     location: z.string().min(1, { message: 'Please enter company location' }),
 })
 
-export default function CreateRecruiterPage() {
+function ModifyRecruiterFormContent() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const id = searchParams.get('id')
+    const isEditMode = Boolean(id)
+
+    const [isLoadingData, setLoadingData] = useState<boolean>(isEditMode)
     const [isSubmitting, setSubmitting] = useState<boolean>(false)
     const [message, setMessage] = useState('')
 
@@ -54,6 +60,7 @@ export default function CreateRecruiterPage() {
         handleSubmit,
         formState: { errors },
         control,
+        reset,
     } = useForm<RecruiterFormSchema>({
         defaultValues: {
             name: '',
@@ -63,6 +70,36 @@ export default function CreateRecruiterPage() {
         },
         resolver: zodResolver(validationSchema),
     })
+
+    // Fetch existing user data if in edit mode
+    useEffect(() => {
+        if (id) {
+            const loadUser = async () => {
+                setLoadingData(true)
+                try {
+                    const response = await ApiService.fetchDataWithAxios<any>({
+                        url: `/users/${id}`,
+                        method: 'get',
+                    })
+                    if (response.success && response.data) {
+                        const user = response.data
+                        const profile = user.recruiterProfile || {}
+                        reset({
+                            name: profile.name || '',
+                            website: profile.website || '',
+                            email: user.email || '',
+                            location: profile.location || '',
+                        })
+                    }
+                } catch (err: any) {
+                    setMessage(parseErrorMessage(err))
+                } finally {
+                    setLoadingData(false)
+                }
+            }
+            loadUser()
+        }
+    }, [id, reset])
 
     const onSubmit = async (values: RecruiterFormSchema) => {
         setSubmitting(true)
@@ -85,16 +122,29 @@ export default function CreateRecruiterPage() {
         }
 
         try {
-            await ApiService.fetchDataWithAxios({
-                url: '/users/create',
-                method: 'post',
-                data: payload,
-            })
-            toast.push(
-                <Notification title="Account created!" type="success">
-                    Recruiter account created successfully!
-                </Notification>,
-            )
+            if (isEditMode) {
+                await ApiService.fetchDataWithAxios({
+                    url: `/users/${id}`,
+                    method: 'patch',
+                    data: payload,
+                })
+                toast.push(
+                    <Notification title="Account updated!" type="success">
+                        Recruiter account updated successfully!
+                    </Notification>,
+                )
+            } else {
+                await ApiService.fetchDataWithAxios({
+                    url: '/users/create',
+                    method: 'post',
+                    data: payload,
+                })
+                toast.push(
+                    <Notification title="Account created!" type="success">
+                        Recruiter account created successfully!
+                    </Notification>,
+                )
+            }
             router.push('/portal/users')
         } catch (error: any) {
             setMessage(parseErrorMessage(error))
@@ -115,19 +165,21 @@ export default function CreateRecruiterPage() {
                 <div>
                     <h1 className="text-2xl font-bold heading-text flex items-center gap-2">
                         <PiBriefcaseDuotone className="text-indigo-600 dark:text-indigo-400" />
-                        Create Recruiter Account
+                        {isEditMode ? 'Edit Recruiter Account' : 'Create Recruiter Account'}
                     </h1>
                     <p className="text-xs text-gray-400">
-                        Create a premium recruiter profile and company identity
-                        on HireHub.
+                        {isEditMode
+                            ? 'Update this recruiter profile and company identity details'
+                            : 'Create a premium recruiter profile and company identity on HireHub.'}
                     </p>
                 </div>
             </div>
 
             {/* Form card container */}
             <Card className="border border-gray-100 dark:border-gray-800 shadow-sm mt-2">
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex flex-col gap-4">
+                <Loading loading={isLoadingData} type="cover">
+                    <Form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="flex flex-col gap-4">
                         {message && (
                             <Alert type="danger" showIcon closable onClose={() => setMessage('')}>
                                 {message}
@@ -224,13 +276,30 @@ export default function CreateRecruiterPage() {
                                 loading={isSubmitting}
                             >
                                 {isSubmitting
-                                    ? 'Creating...'
+                                    ? isEditMode
+                                        ? 'Saving...'
+                                        : 'Creating...'
+                                    : isEditMode
+                                    ? 'Save Changes'
                                     : 'Create Recruiter'}
                             </Button>
                         </div>
                     </div>
                 </Form>
-            </Card>
+            </Loading>
+        </Card>
         </div>
+    )
+}
+
+export default function ModifyRecruiterPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center p-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            </div>
+        }>
+            <ModifyRecruiterFormContent />
+        </Suspense>
     )
 }

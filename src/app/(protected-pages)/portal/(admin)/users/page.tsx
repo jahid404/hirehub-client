@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Card, Button, Badge, Tabs, Input, Select } from '@/components/ui'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 import { RECRUITER, CANDIDATE } from '@/constants/roles.constant'
 import {
     PiPlusBold,
@@ -13,8 +16,11 @@ import {
     PiMapPinDuotone,
     PiPhoneDuotone,
     PiBriefcaseDuotone,
+    PiPencilSimpleLineDuotone,
+    PiTrashDuotone,
 } from 'react-icons/pi'
 import DataTable, { ColumnDef } from '@/components/shared/DataTable'
+import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import ApiService from '@/services/ApiService'
 import debounce from 'lodash/debounce'
 
@@ -41,6 +47,7 @@ export interface Candidate {
 const { TabList, TabNav, TabContent } = Tabs
 
 export default function UserManagementPage() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState<string>(RECRUITER)
     const [loading, setLoading] = useState<boolean>(true)
     const [searchText, setSearchText] = useState<string>('')
@@ -52,6 +59,14 @@ export default function UserManagementPage() {
     const [pageIndex, setPageIndex] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number>(10)
     const [total, setTotal] = useState<number>(0)
+
+    const [isConfirmOpen, setConfirmOpen] = useState<boolean>(false)
+    const [isDeleting, setIsDeleting] = useState<boolean>(false)
+    const [userToDelete, setUserToDelete] = useState<{
+        id: string
+        name: string
+        role: string
+    } | null>(null)
 
     const handleDebounceSearch = useMemo(
         () =>
@@ -98,7 +113,7 @@ export default function UserManagementPage() {
                     const recruitersData = usersList.map((user) => {
                         const profile = user.recruiterProfile || {}
                         return {
-                            id: user.id.slice(0, 8).toUpperCase(),
+                            id: user.id,
                             name: profile.name || 'N/A',
                             website: profile.website || '',
                             email: user.email,
@@ -114,7 +129,7 @@ export default function UserManagementPage() {
                     const candidatesData = usersList.map((user) => {
                         const profile = user.candidateProfile || {}
                         return {
-                            id: user.id.slice(0, 8).toUpperCase(),
+                            id: user.id,
                             name: profile.fullName || 'N/A',
                             email: user.email,
                             role:
@@ -135,6 +150,37 @@ export default function UserManagementPage() {
             console.error('Error fetching users:', error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleDeleteConfirm = async () => {
+        if (!userToDelete) return
+        setIsDeleting(true)
+        try {
+            await ApiService.fetchDataWithAxios({
+                url: `/users/${userToDelete.id}`,
+                method: 'delete',
+            })
+            toast.push(
+                <Notification title="User deleted!" type="success">
+                    {userToDelete.role === RECRUITER
+                        ? 'Recruiter'
+                        : 'Candidate'}{' '}
+                    account "{userToDelete.name}" deleted successfully!
+                </Notification>,
+            )
+            setConfirmOpen(false)
+            setUserToDelete(null)
+            fetchUsers()
+        } catch (error: any) {
+            toast.push(
+                <Notification title="Error deleting user" type="danger">
+                    Failed to delete the user:{' '}
+                    {error.message || 'Unknown error'}
+                </Notification>,
+            )
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -168,22 +214,23 @@ export default function UserManagementPage() {
             {
                 header: 'ID',
                 accessorKey: 'id',
+                enableSorting: false,
                 cell: (props) => (
                     <span className="font-bold text-gray-700 dark:text-gray-300">
-                        {props.row.original.id}
+                        {props.row.original.id.slice(0, 8).toUpperCase()}
                     </span>
                 ),
             },
             {
-                header: 'Company / Name',
+                header: 'Company',
                 accessorKey: 'name',
                 cell: (props) => (
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                    <div className="flex flex-col whitespace-normal break-words max-w-[200px]">
+                        <span className="font-semibold text-sm text-gray-900 dark:text-gray-100 whitespace-normal break-words">
                             {props.row.original.name}
                         </span>
-                        <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                            <PiEnvelopeDuotone /> {props.row.original.email}
+                        <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5 whitespace-normal break-all">
+                            {props.row.original.email}
                         </span>
                     </div>
                 ),
@@ -191,56 +238,78 @@ export default function UserManagementPage() {
             {
                 header: 'Website',
                 accessorKey: 'website',
+                enableSorting: false,
                 cell: (props) => (
                     <a
                         href={props.row.original.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:underline text-xs flex items-center gap-1 font-medium"
+                        className="text-primary hover:underline text-xs flex items-center gap-1 font-medium whitespace-normal break-all max-w-[150px]"
                     >
-                        <PiGlobeDuotone className="text-sm" />
-                        {props.row.original.website.replace('https://', '')}
+                        <span>
+                            {props.row.original.website.replace('https://', '')}
+                        </span>
                     </a>
                 ),
             },
             {
                 header: 'Location',
                 accessorKey: 'location',
+                enableSorting: false,
                 cell: (props) => (
-                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        <PiMapPinDuotone className="text-gray-400" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 whitespace-normal break-words max-w-[150px]">
                         {props.row.original.location}
                     </span>
                 ),
             },
             {
-                header: 'Status',
-                accessorKey: 'status',
-                cell: (props) => {
-                    const status = props.row.original.status
-                    return (
-                        <Badge
-                            content={status}
-                            innerClass={
-                                status === 'Active'
-                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                    : 'bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-300'
-                            }
-                        />
-                    )
-                },
-            },
-            {
                 header: 'Registered',
                 accessorKey: 'createdAt',
                 cell: (props) => (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 whitespace-normal break-words">
                         {props.row.original.createdAt}
                     </span>
                 ),
             },
+            {
+                header: () => <div className="text-right">Actions</div>,
+                accessorKey: 'actions',
+                enableSorting: false,
+                cell: (props) => (
+                    <div className="flex items-center justify-end gap-2">
+                        <Button
+                            size="xs"
+                            onClick={() =>
+                                router.push(
+                                    `/portal/users/modify?id=${props.row.original.id}`,
+                                )
+                            }
+                            className="flex items-center gap-1"
+                        >
+                            <PiPencilSimpleLineDuotone className="text-xs" />
+                            Edit
+                        </Button>
+                        <Button
+                            size="xs"
+                            variant="plain"
+                            onClick={() => {
+                                setUserToDelete({
+                                    id: props.row.original.id,
+                                    name: props.row.original.name,
+                                    role: activeTab,
+                                })
+                                setConfirmOpen(true)
+                            }}
+                            className="flex items-center gap-1 text-red-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+                        >
+                            <PiTrashDuotone className="text-xs" />
+                            Delete
+                        </Button>
+                    </div>
+                ),
+            },
         ],
-        [],
+        [router, activeTab],
     )
 
     // Candidate Columns
@@ -249,9 +318,10 @@ export default function UserManagementPage() {
             {
                 header: 'ID',
                 accessorKey: 'id',
+                enableSorting: false,
                 cell: (props) => (
-                    <span className="font-bold text-gray-700 dark:text-gray-300">
-                        {props.row.original.id}
+                    <span className="font-bold text-gray-700 dark:text-gray-300 whitespace-normal break-words">
+                        {props.row.original.id.slice(0, 8).toUpperCase()}
                     </span>
                 ),
             },
@@ -259,12 +329,12 @@ export default function UserManagementPage() {
                 header: 'Candidate',
                 accessorKey: 'name',
                 cell: (props) => (
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                    <div className="flex flex-col whitespace-normal break-words max-w-[200px]">
+                        <span className="font-semibold text-sm text-gray-900 dark:text-gray-100 whitespace-normal break-words">
                             {props.row.original.name}
                         </span>
-                        <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                            <PiEnvelopeDuotone /> {props.row.original.email}
+                        <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5 whitespace-normal break-all">
+                            {props.row.original.email}
                         </span>
                     </div>
                 ),
@@ -272,43 +342,61 @@ export default function UserManagementPage() {
             {
                 header: 'Phone',
                 accessorKey: 'phone',
+                enableSorting: false,
                 cell: (props) => (
-                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        <PiPhoneDuotone className="text-gray-400" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 whitespace-normal break-words">
                         {props.row.original.phone}
                     </span>
                 ),
             },
             {
-                header: 'Status',
-                accessorKey: 'status',
-                cell: (props) => {
-                    const status = props.row.original.status
-                    return (
-                        <Badge
-                            content={status}
-                            innerClass={
-                                status === 'Active'
-                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                    : status === 'Pending'
-                                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
-                                      : 'bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-300'
-                            }
-                        />
-                    )
-                },
-            },
-            {
                 header: 'Registered',
                 accessorKey: 'createdAt',
                 cell: (props) => (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 whitespace-normal break-words">
                         {props.row.original.createdAt}
                     </span>
                 ),
             },
+            {
+                header: () => <div className="text-right">Actions</div>,
+                accessorKey: 'actions',
+                enableSorting: false,
+                cell: (props) => (
+                    <div className="flex items-center justify-end gap-2">
+                        <Button
+                            size="xs"
+                            onClick={() =>
+                                router.push(
+                                    `/portal/users/modify?id=${props.row.original.id}`,
+                                )
+                            }
+                            className="flex items-center gap-1"
+                        >
+                            <PiPencilSimpleLineDuotone className="text-xs" />
+                            Edit
+                        </Button>
+                        <Button
+                            size="xs"
+                            variant="plain"
+                            onClick={() => {
+                                setUserToDelete({
+                                    id: props.row.original.id,
+                                    name: props.row.original.name,
+                                    role: activeTab,
+                                })
+                                setConfirmOpen(true)
+                            }}
+                            className="flex items-center gap-1 text-red-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+                        >
+                            <PiTrashDuotone className="text-xs" />
+                            Delete
+                        </Button>
+                    </div>
+                ),
+            },
         ],
-        [],
+        [router, activeTab],
     )
 
     const statusOptions = [
@@ -381,7 +469,7 @@ export default function UserManagementPage() {
                     {/* Quick Filters */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <Input
-                            placeholder="Search by name, email, location..."
+                            placeholder="Search by id, name, email, location..."
                             prefix={
                                 <PiMagnifyingGlassDuotone className="text-lg text-gray-400" />
                             }
@@ -424,7 +512,9 @@ export default function UserManagementPage() {
                                         pageIndex,
                                         pageSize,
                                     }}
-                                    onPaginationChange={(page) => setPageIndex(page)}
+                                    onPaginationChange={(page) =>
+                                        setPageIndex(page)
+                                    }
                                     onSelectChange={(size) => {
                                         setPageSize(size)
                                         setPageIndex(1)
@@ -442,7 +532,9 @@ export default function UserManagementPage() {
                                         pageIndex,
                                         pageSize,
                                     }}
-                                    onPaginationChange={(page) => setPageIndex(page)}
+                                    onPaginationChange={(page) =>
+                                        setPageIndex(page)
+                                    }
                                     onSelectChange={(size) => {
                                         setPageSize(size)
                                         setPageIndex(1)
@@ -453,6 +545,29 @@ export default function UserManagementPage() {
                     </div>
                 </div>
             </Card>
+
+            {/* Confirmation Dialog for Deletion */}
+            <ConfirmDialog
+                isOpen={isConfirmOpen}
+                type="danger"
+                title="Delete User Account"
+                confirmText="Yes, Delete"
+                cancelText="No, Keep"
+                onClose={() => setConfirmOpen(false)}
+                onCancel={() => setConfirmOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                confirmButtonProps={{ loading: isDeleting }}
+            >
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Are you absolutely sure you want to delete the user{' '}
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        "{userToDelete?.name}"
+                    </span>
+                    ? This action is permanent and cannot be undone. All
+                    profiles and data associated with this user will be
+                    completely removed.
+                </p>
+            </ConfirmDialog>
         </div>
     )
 }
