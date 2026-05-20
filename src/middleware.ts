@@ -8,6 +8,7 @@ import {
 } from '@/configs/routes.config'
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import appConfig from '@/configs/app.config'
+import { matchRoute } from '@/utils/queryRoute'
 
 const { auth } = NextAuth(authConfig)
 
@@ -53,9 +54,8 @@ export default auth((req) => {
     }
 
     if (isSignedIn && nextUrl.pathname !== '/access-denied' && !nextUrl.pathname.startsWith(appConfig.apiPrefix)) {
-        const routeMeta = protectedRoutes[nextUrl.pathname]
-        const existingRoute = routeMeta
-        if (existingRoute && routeMeta.authority && routeMeta.authority.length > 0) {
+        const routeMeta = matchRoute(nextUrl.pathname)
+        if (routeMeta && routeMeta.authority && routeMeta.authority.length > 0) {
             const includedRole = routeMeta.authority.some((role) =>
                 req.auth?.user?.authority?.includes(role)
             )
