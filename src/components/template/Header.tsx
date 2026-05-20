@@ -3,6 +3,7 @@ import { HEADER_HEIGHT } from '@/constants/theme.constant'
 import DarkModeToggle from '@/components/template/DarkModeToggle'
 import type { ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
+import VisitWebsiteButton from './VisitWebsiteButton'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -41,6 +42,7 @@ const Header = (props: HeaderProps) => {
                     </div>
                 )}
                 <div className="header-action header-action-end">
+                    <VisitWebsiteButton />
                     <DarkModeToggle />
                     {headerEnd}
                 </div>

@@ -41,7 +41,7 @@ export default function PublicLayout({
                         {/* Logo */}
                         <div className="flex-shrink-0 flex items-center">
                             <Link
-                                href="/home"
+                                href="/"
                                 className="flex items-center gap-2"
                             >
                                 <Logo imgClass="max-h-9" mode={mode} />
