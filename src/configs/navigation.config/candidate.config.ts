@@ -12,21 +12,11 @@ const candidateNavigationConfig: NavigationTree[] = [
         authority: [CANDIDATE],
         subMenu: [],
     },
-
     {
         key: 'candidate.appliedJobs',
         path: '/portal/applications',
         title: 'Applied Jobs',
         icon: 'appliedJobs',
-        type: NAV_ITEM_TYPE_ITEM,
-        authority: [CANDIDATE],
-        subMenu: [],
-    },
-    {
-        key: 'candidate.profile',
-        path: '/portal/profile',
-        title: 'My Profile',
-        icon: 'profile',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [CANDIDATE],
         subMenu: [],
