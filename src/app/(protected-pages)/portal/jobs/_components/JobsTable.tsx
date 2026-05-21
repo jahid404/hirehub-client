@@ -7,6 +7,7 @@ import {
     PiCurrencyDollarBold,
     PiPencilSimpleBold,
     PiTrashBold,
+    PiEye,
 } from 'react-icons/pi'
 import dayjs from 'dayjs'
 import type { JobType } from './types'
@@ -140,6 +141,16 @@ export default function JobsTable({
                     const row = props.row.original
                     return (
                         <div className="flex items-center gap-2">
+                            <Link href={`/jobs/${row.id}`} target="_blank">
+                                <Button
+                                    size="sm"
+                                    className="p-1.5 h-8 w-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    title="View Job"
+                                >
+                                    <PiEye className="text-gray-500 hover:text-indigo-600 text-sm" />
+                                </Button>
+                            </Link>
+
                             <Link href={`/portal/jobs/edit/${row.id}`}>
                                 <Button
                                     size="sm"

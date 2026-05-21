@@ -105,9 +105,15 @@ function Select<
 
     const selectClass = cn(`select select-${selectSize}`, className)
 
+    const defaultMenuPortalTarget =
+        typeof document !== 'undefined' ? document.body : undefined
+
     return (
         <Component<Option, IsMulti, Group>
             className={selectClass}
+            menuPortalTarget={defaultMenuPortalTarget}
+            menuPosition="fixed"
+            menuPlacement="auto"
             classNames={
                 {
                     control: (state) =>
@@ -195,6 +201,7 @@ function Select<
                         boxShadow,
                         ...provided
                     }) => ({ ...provided, zIndex: 50 }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                     option: () => ({}),
                     ...styles,
                 } as StylesConfig<Option, IsMulti, Group>
