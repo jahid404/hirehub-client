@@ -315,7 +315,7 @@ export default function ApplicationsPage() {
             <ApplicationStatusDialog
                 application={selectedApp}
                 isOpen={dialogOpen}
-                isRecruiterOrAdmin={isRecruiterOrAdmin}
+                isRecruiter={role === 'recruiter'}
                 onClose={handleCloseDialog}
                 onStatusUpdated={handleStatusUpdated}
             />

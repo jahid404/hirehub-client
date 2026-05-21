@@ -30,7 +30,7 @@ import dayjs from 'dayjs'
 interface Props {
     application: ApplicationResponse | null
     isOpen: boolean
-    isRecruiterOrAdmin: boolean
+    isRecruiter?: boolean
     onClose: () => void
     onStatusUpdated: (id: string, status: string) => void
 }
@@ -145,7 +145,7 @@ function formatBytes(bytes: number): string {
 export default function ApplicationStatusDialog({
     application,
     isOpen,
-    isRecruiterOrAdmin,
+    isRecruiter = false,
     onClose,
     onStatusUpdated,
 }: Props) {
@@ -511,7 +511,7 @@ export default function ApplicationStatusDialog({
                 )}
 
                 {/* ── Recruiter Status Updater ── */}
-                {isRecruiterOrAdmin && (
+                {isRecruiter && (
                     <div className="rounded-2xl border border-indigo-100 dark:border-indigo-900/60 overflow-hidden bg-indigo-50/50 dark:bg-indigo-950/20">
                         <div className="bg-indigo-100/60 dark:bg-indigo-950/40 px-4 py-2.5 border-b border-indigo-100 dark:border-indigo-900/60">
                             <p className="text-xs font-bold uppercase tracking-widest text-indigo-500">
