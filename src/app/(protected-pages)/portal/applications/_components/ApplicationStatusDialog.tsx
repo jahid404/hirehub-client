@@ -198,7 +198,7 @@ export default function ApplicationStatusDialog({
             isOpen={isOpen}
             onClose={onClose}
             width={720}
-            contentClassName="!p-0 !overflow-auto flex flex-col bg-white/95 dark:bg-gray-950/95 border border-white/20 dark:border-gray-800/60 rounded-[24px] shadow-2xl"
+            contentClassName="!p-0 !overflow-hidden"
         >
             {/* Header */}
             <div className="px-6 pt-6 pb-4 md:px-8 border-b border-gray-100 dark:border-gray-800/80 flex-shrink-0 bg-gradient-to-r from-indigo-950/5 via-slate-950/5 to-indigo-950/5 dark:from-indigo-950/30 dark:via-gray-950/20 dark:to-indigo-950/30">

@@ -1,16 +1,16 @@
 @layer components {
   .dialog {
     outline: none;
-    @apply mx-auto;
+    @apply w-full max-w-full flex items-center justify-center my-auto;
   }
   
   .dialog-content {
-    @apply p-6 md:p-8 rounded-[24px] shadow-2xl mx-4 my-8 sm:mx-0 sm:my-16 relative max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-950/95 backdrop-blur-xl border border-gray-200/60 dark:border-gray-800/60;
+    @apply rounded-[24px] shadow-2xl relative max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-950/95 backdrop-blur-xl border border-gray-200/60 dark:border-gray-800/60 w-full flex flex-col p-6 md:p-8;
   }
   
   .dialog-overlay {
     transition: all 0.15s ease-in-out;
-    @apply inset-0 fixed z-[50] bg-black/60 dark:bg-black/80;
+    @apply inset-0 fixed z-[50] bg-black/60 dark:bg-black/80 flex items-center justify-center p-4 md:p-6;
   }
 
   .dialog-overlay-blur {

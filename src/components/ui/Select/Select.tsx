@@ -19,6 +19,7 @@ import type {
 } from 'react-select'
 import type { AsyncProps } from 'react-select/async'
 import type { CreatableProps } from 'react-select/creatable'
+import { useState, useEffect } from 'react'
 import type { Ref, JSX } from 'react'
 
 const DefaultDropdownIndicator = () => {
@@ -105,13 +106,16 @@ function Select<
 
     const selectClass = cn(`select select-${selectSize}`, className)
 
-    const defaultMenuPortalTarget =
-        typeof document !== 'undefined' ? document.body : undefined
+    const [menuPortalTarget, setMenuPortalTarget] = useState<HTMLElement | null>(null)
+
+    useEffect(() => {
+        setMenuPortalTarget(document.body)
+    }, [])
 
     return (
         <Component<Option, IsMulti, Group>
             className={selectClass}
-            menuPortalTarget={defaultMenuPortalTarget}
+            menuPortalTarget={menuPortalTarget}
             menuPosition="fixed"
             menuPlacement="auto"
             classNames={

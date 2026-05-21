@@ -128,7 +128,7 @@ export default function ApplyJobDialog({ job, isOpen, onClose }: Props) {
             isOpen={isOpen}
             onClose={closeDialog}
             width={720}
-            contentClassName="!p-0 !overflow-hidden !max-h-[90vh] sm:!max-h-[85vh] flex flex-col bg-white dark:bg-gray-950/95 border border-gray-200/60 dark:border-gray-800/60 rounded-[24px]"
+            contentClassName="!p-0 !overflow-hidden sm:!max-h-[85vh]"
         >
             {/* Pinned Premium Header */}
             <div className="px-6 pt-6 pb-4 md:px-8 md:pt-8 md:pb-5 border-b border-gray-100 dark:border-gray-900 bg-white dark:bg-gray-950 flex-shrink-0">
